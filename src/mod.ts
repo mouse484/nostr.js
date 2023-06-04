@@ -13,13 +13,15 @@ export class Client extends Emitter<Events> {
     const pool = new RelayPool([
       'wss://yabu.me',
       'wss://universe.nostrich.land',
+      'wss://relay.damus.io',
     ]);
 
     const filter = { kinds: [1], limit: 1 };
     pool.subscribe(filter);
 
-    pool.on('message', (event) => {
-      this.emit('message', event);
+    pool.on('message', (event, relay) => {
+      console.log(`${event}: ${relay}`);
+      // this.emit('message', event);
     });
   }
 }

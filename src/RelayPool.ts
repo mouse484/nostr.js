@@ -1,5 +1,6 @@
 import { Emitter } from 'npm:strict-event-emitter';
-import { Filter } from './filter.ts';
+import { Filter } from './Filter.ts';
+import { parseEvent } from './Event.ts';
 
 const makesubscription = <Type = 'REQ' | 'CLOSE', SubscriptionId = string>(
   type: Type,
@@ -12,7 +13,7 @@ const makesubscription = <Type = 'REQ' | 'CLOSE', SubscriptionId = string>(
 };
 
 type Events = {
-  message: [MessageEvent];
+  message: [string, string];
 };
 
 export class RelayPool extends Emitter<Events> {
@@ -33,8 +34,18 @@ export class RelayPool extends Emitter<Events> {
         ws.send(makesubscription('REQ', subscriptionId, filter));
       });
     };
-    ws.onmessage = (event) => {
-      this.emit('message', event);
+    ws.onmessage = (messageEvent: MessageEvent<string>) => {
+      const parsed = parseEvent(messageEvent.data);
+      if (parsed) {
+        const [type, _, event] = parsed;
+        if (type === 'EVENT') {
+          switch (event?.kind) {
+            case 1:
+              this.emit('message', event.content, relayUrl);
+              break;
+          }
+        }
+      }
     };
   }
   private sendRelays(
