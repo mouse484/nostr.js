@@ -1,5 +1,5 @@
 import { Filter } from './Filter.ts';
-import { parseEvent } from './Event.ts';
+import { parseEvent } from './NostrEvent.ts';
 import { EventHandler } from './EventHandler.ts';
 import { Client } from './Client.ts';
 

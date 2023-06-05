@@ -1,11 +1,17 @@
 import { Client } from '../Client.ts';
-import { NostrEvent } from '../Event.ts';
+import { NostrEvent } from '../NostrEvent.ts';
 import { Reaction } from './@Reaction.ts';
 import type { TextNote } from './@TextNote.ts';
 
 export type EventList = {
-  TextNote: TextNote;
+  TextNote: [TextNote];
   Reaction: Reaction;
+};
+
+export type ClientEventBase = {
+  id: string;
+  author: string;
+  relays: string[];
 };
 
 export type EventOptions = {

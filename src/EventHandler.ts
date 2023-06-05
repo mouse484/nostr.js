@@ -1,4 +1,4 @@
-import { NostrEvent } from './Event.ts';
+import { NostrEvent } from './NostrEvent.ts';
 import { walk } from 'https://deno.land/std@0.190.0/fs/walk.ts';
 import { EventOptions } from './events/mod.ts';
 import { Client } from './Client.ts';

@@ -1,4 +1,8 @@
 import { Client } from '../src/Client.ts';
+// @deno-types="npm:@types/terminal-kit"
+import terminalKit from 'npm:terminal-kit';
+
+const terminal = terminalKit.terminal;
 
 const client = new Client({
   relays: [
@@ -12,8 +16,16 @@ client.on('ready', () => {
   console.log('ready');
 });
 
-// client.on('TextNote', (event, relay) => {
-//   console.log(`${relay}
-// ${event.content}
-// ---------`);
-// });
+client.on('TextNote', (event) => {
+  terminal.table(
+    [
+      ['content', event.content],
+      ['author', event.author],
+      ['relays', event.relays.join(',')],
+    ],
+    {
+      width: 80,
+      firstColumnTextAttr: { color: 'grey' },
+    }
+  );
+});

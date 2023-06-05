@@ -1,19 +1,22 @@
-import { TextNoteCache, TextNoteCacheType } from '../cache/TextNote.ts';
-import { event } from './mod.ts';
+import { TextNoteCache } from '../cache/TextNote.ts';
+import { ClientEventBase, event } from './mod.ts';
 
-export type TextNote = TextNoteCacheType;
+export type TextNote = ClientEventBase & { content: string };
 
 export default event(() => ({
   name: 'TextNote',
   kind: 1,
   run({ event, client, relay }) {
-    const cache = TextNoteCache.get<TextNoteCacheType>(event.id);
+    const cache = TextNoteCache.get<TextNote>(event.id);
 
-    const result: TextNoteCacheType = cache
-      ? [event, [...cache[1], relay]]
-      : [event, [relay]];
+    const result: TextNote = {
+      id: event.id,
+      content: event.content,
+      author: event.pubkey,
+      relays: cache ? [...cache.relays, relay] : [relay],
+    };
 
     TextNoteCache.set(event.id, result);
-    client.emit('TextNote', event, result[1]);
+    client.emit('TextNote', result);
   },
 }));
