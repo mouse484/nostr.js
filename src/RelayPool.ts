@@ -15,7 +15,7 @@ const makesubscription = <Type = 'REQ' | 'CLOSE', SubscriptionId = string>(
 
 export class RelayPool {
   public relays = new Map<string, WebSocket>();
-  private subscripitons = new Map<Filter, string>();
+  private subscripitons = new Map<string, Filter>();
   private eventHandler: EventHandler;
   constructor(private client: Client, relays?: string[]) {
     this.eventHandler = new EventHandler(this.client);
@@ -27,7 +27,7 @@ export class RelayPool {
     const ws = new WebSocket(relayUrl);
     ws.onopen = () => {
       this.relays.set(relayUrl, ws);
-      this.subscripitons.forEach((subscriptionId, filter) => {
+      this.subscripitons.forEach((filter, subscriptionId) => {
         ws.send(makesubscription('REQ', subscriptionId, filter));
       });
     };
@@ -41,13 +41,7 @@ export class RelayPool {
             break;
           }
           case 'EOSE': {
-            const subscripiton = [...this.subscripitons.entries()].find(
-              ([, value]) => value === id
-            );
-            if (subscripiton) {
-              const [key] = subscripiton;
-              this.subscripitons.delete(key);
-            }
+            this.subscripitons.delete(id);
           }
         }
       }
@@ -64,17 +58,16 @@ export class RelayPool {
   }
 
   subscribe(filter: Filter) {
-    const alreadySub = this.subscripitons.get(filter);
+    const alreadySub = [...this.subscripitons.values()].find((value) =>
+      Object.is(value, filter)
+    );
     if (alreadySub) return alreadySub;
     const subscriptionId = Math.random().toString(32).substring(2);
-    this.subscripitons.set(filter, subscriptionId);
+    this.subscripitons.set(subscriptionId, filter);
     this.sendRelays('REQ', subscriptionId, filter);
     return subscriptionId;
   }
-  unsubscribe(filter: Filter) {
-    const subscriptionId = this.subscripitons.get(filter);
-    if (subscriptionId) {
-      this.sendRelays('CLOSE', subscriptionId);
-    }
+  unsubscribe(subscriptionId: string) {
+    this.sendRelays('CLOSE', subscriptionId);
   }
 }

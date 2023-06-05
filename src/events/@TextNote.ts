@@ -1,5 +1,4 @@
 import { TextNoteCache } from '../cache/TextNote.ts';
-import { Author } from './@Author.ts';
 import { ClientEventBase, event } from './mod.ts';
 
 export type TextNote = ClientEventBase & { author: unknown; content: string };
