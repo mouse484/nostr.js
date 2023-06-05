@@ -2,8 +2,12 @@ import { Filter } from './Filter.ts';
 import { parseEvent } from './NostrEvent.ts';
 import { EventHandler } from './EventHandler.ts';
 import { Client } from './Client.ts';
+import { consola } from 'npm:consola';
 
-const makesubscription = <Type = 'REQ' | 'CLOSE', SubscriptionId = string>(
+const makesubscription = <
+  Type = 'REQ' | 'CLOSE' | 'NOTICE',
+  SubscriptionId = string
+>(
   type: Type,
   id: SubscriptionId,
   filter?: Filter
@@ -42,7 +46,11 @@ export class RelayPool {
           }
           case 'EOSE': {
             this.subscripitons.delete(id);
+            break;
           }
+          case 'NOTICE':
+            consola.info(id);
+            break;
         }
       }
     };
