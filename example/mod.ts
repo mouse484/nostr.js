@@ -17,15 +17,17 @@ client.on('ready', () => {
 });
 
 client.on('TextNote', (event) => {
-  terminal.table(
-    [
-      ['author', event.author.name],
-      ['content', event.content],
-      ['relays', event.relays.join(',')],
-    ],
-    {
-      width: 80,
-      firstColumnTextAttr: { color: 'grey' },
-    }
-  );
+  setTimeout(() => {
+    terminal.table(
+      [
+        ['author', event.author.name],
+        ['content', event.content],
+        ['relays', event.relays.join(',')],
+      ],
+      {
+        width: 80,
+        firstColumnTextAttr: { color: 'grey' },
+      }
+    );
+  }, 5000);
 });

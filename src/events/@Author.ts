@@ -30,7 +30,8 @@ export default event(() => ({
       (cache?.createdAt || 0) > newAuthorProfile.createdAt
         ? newAuthorProfile
         : cache || newAuthorProfile;
-    AuthorCache.set(event.id, result);
+    AuthorCache.set(event.pubkey, result);
     client.emit('Author', id, result);
+    client.pool.unsubscribe(id);
   },
 }));
