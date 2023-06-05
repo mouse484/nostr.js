@@ -49,7 +49,7 @@ export class RelayPool {
             break;
           }
           case 'NOTICE':
-            consola.info(id);
+            consola.info(`${relayUrl}: ${id}`);
             break;
         }
       }
