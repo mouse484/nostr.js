@@ -10,6 +10,8 @@ export const eventScheme = z.object({
   sig: z.string(),
 });
 
+export type NostrEvent = z.infer<typeof eventScheme>;
+
 export const parseEvent = (event: string) => {
   const scheme = z
     .tuple([z.literal('EOSE').or(z.literal('NOTICE')), z.string()])

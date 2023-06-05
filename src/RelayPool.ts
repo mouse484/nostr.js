@@ -1,6 +1,7 @@
-import { Emitter } from 'npm:strict-event-emitter';
 import { Filter } from './Filter.ts';
 import { parseEvent } from './Event.ts';
+import { EventHandler } from './EventHandler.ts';
+import { Client } from './Client.ts';
 
 const makesubscription = <Type = 'REQ' | 'CLOSE', SubscriptionId = string>(
   type: Type,
@@ -12,16 +13,12 @@ const makesubscription = <Type = 'REQ' | 'CLOSE', SubscriptionId = string>(
   return JSON.stringify(sub);
 };
 
-type Events = {
-  message: [string, string];
-};
-
-export class RelayPool extends Emitter<Events> {
+export class RelayPool {
   public relays = new Map<string, WebSocket>();
   private subscripitons = new Map<Filter, string>();
-  constructor(relays?: string[]) {
-    super();
-
+  private eventHandler: EventHandler;
+  constructor(private client: Client, relays?: string[]) {
+    this.eventHandler = new EventHandler(this.client);
     relays?.forEach((relayUrl) => {
       this.applyRelay(relayUrl);
     });
@@ -40,9 +37,7 @@ export class RelayPool extends Emitter<Events> {
         const [type, id, event] = parsed;
         switch (type) {
           case 'EVENT': {
-            if (event?.kind === 1) {
-              this.emit('message', event.content, relayUrl);
-            }
+            if (event) this.eventHandler.handle(event);
             break;
           }
           case 'EOSE': {
