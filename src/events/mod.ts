@@ -10,8 +10,9 @@ export type EventList = {
 
 export type ClientEventBase = {
   id: string;
-  author: string;
+  pubkey: string;
   relays: string[];
+  createdAt: Date;
 };
 
 export type EventOptions = {
