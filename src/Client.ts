@@ -13,7 +13,7 @@ export class Client extends Emitter<Events> {
 
     this.pool = new RelayPool(this, this.options?.relays);
 
-    const filter = { kinds: [1], limit: 1 };
+    const filter = { limit: 1 };
     this.pool.subscribe(filter);
   }
 }

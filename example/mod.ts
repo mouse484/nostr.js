@@ -12,8 +12,8 @@ client.on('ready', () => {
   console.log('ready');
 });
 
-client.on('TextNote', (event, relay) => {
-  console.log(`${relay}
-${event.content}
----------`);
-});
+// client.on('TextNote', (event, relay) => {
+//   console.log(`${relay}
+// ${event.content}
+// ---------`);
+// });

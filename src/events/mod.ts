@@ -1,9 +1,11 @@
 import { Client } from '../Client.ts';
 import { NostrEvent } from '../Event.ts';
+import { Reaction } from './@Reaction.ts';
 import type { TextNote } from './@TextNote.ts';
 
 export type EventList = {
   TextNote: TextNote;
+  Reaction: Reaction;
 };
 
 export type EventOptions = {
