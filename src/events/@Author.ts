@@ -11,10 +11,10 @@ const authorScheme = z.object({
 export default event(() => ({
   name: 'Author',
   kind: 0,
-  run({ event, relay }) {
+  run({ event, relay, id, client }) {
     const cache = AuthorCache.get<Author>(event.id);
 
-    const parsed = authorScheme.safeParse(event.content);
+    const parsed = authorScheme.safeParse(JSON.parse(event.content));
 
     const newAuthorProfile: Author = {
       id: event.id,
@@ -26,11 +26,11 @@ export default event(() => ({
 
     if (cache) cache.relays.push(relay);
 
-    AuthorCache.set(
-      event.id,
-      (cache?.createdAt || 0) <= newAuthorProfile.createdAt
+    const result =
+      (cache?.createdAt || 0) > newAuthorProfile.createdAt
         ? newAuthorProfile
-        : cache
-    );
+        : cache || newAuthorProfile;
+    AuthorCache.set(event.id, result);
+    client.emit('Author', id, result);
   },
 }));

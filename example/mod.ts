@@ -19,7 +19,7 @@ client.on('ready', () => {
 client.on('TextNote', (event) => {
   terminal.table(
     [
-      ['author', event.pubkey],
+      ['author', event.author.name],
       ['content', event.content],
       ['relays', event.relays.join(',')],
     ],

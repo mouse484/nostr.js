@@ -37,7 +37,7 @@ export class RelayPool {
         const [type, id, event] = parsed;
         switch (type) {
           case 'EVENT': {
-            if (event) this.eventHandler.handle(event, relayUrl);
+            if (event) this.eventHandler.handle({ event, id, relay: relayUrl });
             break;
           }
           case 'EOSE': {
@@ -57,7 +57,7 @@ export class RelayPool {
     });
   }
 
-  subscribe(filter: Filter) {
+  req(filter: Filter) {
     const alreadySub = [...this.subscripitons.values()].find((value) =>
       Object.is(value, filter)
     );
