@@ -7,19 +7,16 @@ type Events = {
 };
 
 export class Client extends Emitter<Events> {
+  readonly pool: RelayPool;
   constructor(private options?: { relays?: string[] }) {
     super();
 
-    const pool = new RelayPool([
-      'wss://yabu.me',
-      'wss://universe.nostrich.land',
-      'wss://relay.damus.io',
-    ]);
+    this.pool = new RelayPool(this.options?.relays);
 
     const filter = { kinds: [1], limit: 1 };
-    pool.subscribe(filter);
+    this.pool.subscribe(filter);
 
-    pool.on('message', (event, relay) => {
+    this.pool.on('message', (event, relay) => {
       console.log(`${event}: ${relay}`);
       // this.emit('message', event);
     });

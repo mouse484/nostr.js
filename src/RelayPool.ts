@@ -19,10 +19,10 @@ type Events = {
 export class RelayPool extends Emitter<Events> {
   public relays = new Map<string, WebSocket>();
   private subscripitons = new Map<Filter, string>();
-  constructor(relays: string[]) {
+  constructor(relays?: string[]) {
     super();
 
-    relays.forEach((relayUrl) => {
+    relays?.forEach((relayUrl) => {
       this.applyRelay(relayUrl);
     });
   }
