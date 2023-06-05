@@ -22,10 +22,10 @@ export class EventHandler {
       }
     }
   }
-  handle(event: NostrEvent) {
+  handle(event: NostrEvent, relay: string) {
     if (!event) return;
     this.events.get(event.kind)?.forEach((value) => {
-      value.run({ event, client: this.client });
+      value.run({ event, client: this.client, relay });
     });
   }
 }

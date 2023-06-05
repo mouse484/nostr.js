@@ -37,7 +37,7 @@ export class RelayPool {
         const [type, id, event] = parsed;
         switch (type) {
           case 'EVENT': {
-            if (event) this.eventHandler.handle(event);
+            if (event) this.eventHandler.handle(event, relayUrl);
             break;
           }
           case 'EOSE': {
