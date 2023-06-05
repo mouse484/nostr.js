@@ -37,12 +37,22 @@ export class RelayPool extends Emitter<Events> {
     ws.onmessage = (messageEvent: MessageEvent<string>) => {
       const parsed = parseEvent(messageEvent.data);
       if (parsed) {
-        const [type, _, event] = parsed;
-        if (type === 'EVENT') {
-          switch (event?.kind) {
-            case 1:
+        const [type, id, event] = parsed;
+        switch (type) {
+          case 'EVENT': {
+            if (event?.kind === 1) {
               this.emit('message', event.content, relayUrl);
-              break;
+            }
+            break;
+          }
+          case 'EOSE': {
+            const subscripiton = [...this.subscripitons.entries()].find(
+              ([, value]) => value === id
+            );
+            if (subscripiton) {
+              const [key] = subscripiton;
+              this.subscripitons.delete(key);
+            }
           }
         }
       }
