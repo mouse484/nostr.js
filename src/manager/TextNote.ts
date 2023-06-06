@@ -1,9 +1,9 @@
 import { ClientEventBase } from '../events/mod.ts';
-import { Author } from "./Author.ts";
+import { Author } from './Author.ts';
 import { ManagerBase } from './Base.ts';
 
 export type TextNote = ClientEventBase & {
-  author: Author;
+  author: Author | undefined;
   content: string;
 };
 

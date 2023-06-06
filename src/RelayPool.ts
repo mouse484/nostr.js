@@ -83,20 +83,23 @@ export class RelayPool extends Emitter<{
   subscribe(filter: Filter) {
     const subid = this.req(filter);
     return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        this.unsubscribe(subid);
-        reject();
-      }, 5000);
-      this.on('message', (value) => {
+      const listener = (value: ReturnType<typeof parseEvent>) => {
         if (value) {
           const [, id] = value;
           if (id === subid) {
             this.unsubscribe(id);
             resolve(id);
             clearTimeout(timeout);
+            this.off('message', listener);
           }
         }
-      });
+      };
+      const timeout = setTimeout(() => {
+        this.unsubscribe(subid);
+        reject();
+        this.off('message', listener);
+      }, 5000);
+      this.on('message', listener);
     });
   }
   unsubscribe(subscriptionId: string) {

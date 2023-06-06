@@ -8,26 +8,20 @@ const client = new Client({
   relays: [
     'wss://yabu.me',
     'wss://universe.nostrich.land?lang=ja',
-    'wss://relay.damus.io',
+    // 'wss://relay.damus.io',
   ],
 });
 
-client.on('ready', () => {
-  console.log('ready');
-});
-
 client.on('TextNote', (event) => {
-  setTimeout(() => {
-    terminal.table(
-      [
-        ['author', event.author.name],
-        ['content', event.content],
-        ['relays', event.relays.join(',')],
-      ],
-      {
-        width: 80,
-        firstColumnTextAttr: { color: 'grey' },
-      }
-    );
-  }, 5000);
+  terminal.table(
+    [
+      ['author', event.author?.name || ''],
+      ['content', event.content],
+      ['relays', event.relays.join(',')],
+    ],
+    {
+      width: 80,
+      firstColumnTextAttr: { color: 'grey' },
+    }
+  );
 });

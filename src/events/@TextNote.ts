@@ -1,4 +1,3 @@
-import { Author } from '../manager/Author.ts';
 import { TextNote } from '../manager/TextNote.ts';
 import { event } from './mod.ts';
 
@@ -14,20 +13,7 @@ export default event(() => ({
     });
     const result: TextNote = {
       id: event.id,
-      author: new Proxy<Author>(
-        {
-          id: '',
-          pubkey: '',
-          createdAt: new Date(),
-          relays: [],
-          name: '',
-        },
-        {
-          get(_, property: keyof Author) {
-            return client.$Author.get(event.pubkey)?.[property];
-          },
-        }
-      ),
+      author: client.$Author.get(event.pubkey),
       content: event.content,
       pubkey: event.pubkey,
       createdAt: new Date(event.created_at * 1000),
