@@ -14,10 +14,11 @@ export type NostrEvent = z.infer<typeof eventScheme>;
 
 export const parseEvent = (event: string) => {
   const scheme = z
-    .tuple([z.literal('EOSE').or(z.literal('NOTICE')), z.string()])
-    .or(z.tuple([z.literal('EVENT'), z.string(), eventScheme.nullish()]));
+    .tuple([
+      z.literal('EOSE').or(z.literal('NOTICE').or(z.literal('AUTH'))),
+      z.string(),
+    ])
+    .or(z.tuple([z.literal('EVENT'), z.string(), eventScheme.optional()]));
   const parsed = scheme.safeParse(JSON.parse(event));
-  if (parsed.success) {
-    return parsed.data;
-  }
+  if (parsed.success) return parsed.data;
 };

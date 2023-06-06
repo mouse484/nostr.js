@@ -31,7 +31,6 @@ export class EventHandler {
     id: string;
     relay: string;
   }) {
-    if (!event) return;
     this.events.get(event.kind)?.forEach((value) => {
       value.run({ event, client: this.client, id, relay });
     });
