@@ -3,6 +3,7 @@ import { parseEvent } from './NostrEvent.ts';
 import { EventHandler } from './EventHandler.ts';
 import { Client } from './Client.ts';
 import { consola } from 'npm:consola';
+import { Emitter } from 'npm:strict-event-emitter';
 
 const makesubscription = <
   Type = 'REQ' | 'CLOSE' | 'NOTICE',
@@ -17,11 +18,14 @@ const makesubscription = <
   return JSON.stringify(sub);
 };
 
-export class RelayPool {
+export class RelayPool extends Emitter<{
+  message: [ReturnType<typeof parseEvent>];
+}> {
   public relays = new Map<string, WebSocket>();
   private subscripitons = new Map<string, Filter>();
   private eventHandler: EventHandler;
   constructor(private client: Client, relays?: string[]) {
+    super();
     this.eventHandler = new EventHandler(this.client);
     relays?.forEach((relayUrl) => {
       this.applyRelay(relayUrl);
@@ -39,6 +43,7 @@ export class RelayPool {
       const parsed = parseEvent(messageEvent.data);
       if (parsed) {
         const [type, id, event] = parsed;
+        this.emit('message', parsed);
         switch (type) {
           case 'EVENT': {
             if (event) this.eventHandler.handle({ event, id, relay: relayUrl });
@@ -66,14 +71,33 @@ export class RelayPool {
   }
 
   req(filter: Filter) {
-    const alreadySub = [...this.subscripitons.values()].find((value) =>
+    const alreadySub = [...this.subscripitons.entries()].find(([, value]) =>
       Object.is(value, filter)
     );
-    if (alreadySub) return alreadySub;
+    if (alreadySub) return alreadySub[0];
     const subscriptionId = Math.random().toString(32).substring(2);
     this.subscripitons.set(subscriptionId, filter);
     this.sendRelays('REQ', subscriptionId, filter);
     return subscriptionId;
+  }
+  subscribe(filter: Filter) {
+    const subid = this.req(filter);
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        this.unsubscribe(subid);
+        reject();
+      }, 5000);
+      this.on('message', (value) => {
+        if (value) {
+          const [, id] = value;
+          if (id === subid) {
+            this.unsubscribe(id);
+            resolve(id);
+            clearTimeout(timeout);
+          }
+        }
+      });
+    });
   }
   unsubscribe(subscriptionId: string) {
     this.sendRelays('CLOSE', subscriptionId);

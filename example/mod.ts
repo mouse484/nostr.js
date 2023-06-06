@@ -20,7 +20,7 @@ client.on('TextNote', (event) => {
   setTimeout(() => {
     terminal.table(
       [
-        ['author', event.pubkey],
+        ['author', event.author.name],
         ['content', event.content],
         ['relays', event.relays.join(',')],
       ],
