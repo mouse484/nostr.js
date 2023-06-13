@@ -1,10 +1,10 @@
 import z from 'https://deno.land/x/zod@v3.21.4/index.ts';
-import { ClientEventBase, event } from './mod.ts';
-
-export type Author = ClientEventBase & { name: string };
+import { event } from './mod.ts';
+import { Author } from '../manager/Author.ts';
 
 const authorScheme = z.object({
   name: z.string(),
+  picture: z.string().url(),
 });
 
 export default event(() => ({
@@ -21,6 +21,7 @@ export default event(() => ({
       createdAt: new Date(event.created_at * 1000),
       relays: [relay],
       name: parsed.success ? parsed.data.name : event.pubkey,
+      icon: parsed.success ? parsed.data.picture : '',
     };
 
     if (cache) cache.relays.push(relay);
