@@ -13,9 +13,11 @@ const client = new Client({
 });
 
 client.on('TextNote', (event) => {
+  console.log(event.author?.nip05);
   terminal.table(
     [
       ['author', event.author?.name || ''],
+      ['nip05', event.author?.nip05 || ''],
       ['content', event.content],
       ['relays', event.relays.join(',')],
     ],

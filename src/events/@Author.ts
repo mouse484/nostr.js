@@ -1,10 +1,12 @@
 import z from 'https://deno.land/x/zod@v3.21.4/index.ts';
 import { event } from './mod.ts';
 import { Author } from '../manager/Author.ts';
+import { nip05 } from 'npm:nostr-tools';
 
 const authorScheme = z.object({
   name: z.string(),
   picture: z.string().url(),
+  nip05: z.string().optional(),
 });
 
 export default event(() => ({
@@ -22,6 +24,7 @@ export default event(() => ({
       relays: [relay],
       name: parsed.success ? parsed.data.name : event.pubkey,
       icon: parsed.success ? parsed.data.picture : '',
+      nip05: parsed.success ? parsed.data.nip05 : '',
     };
 
     if (cache) cache.relays.push(relay);
