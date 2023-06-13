@@ -8,7 +8,7 @@ const client = new Client({
   relays: [
     'wss://yabu.me',
     'wss://universe.nostrich.land?lang=ja',
-    // 'wss://relay.damus.io',
+    'wss://relay.damus.io',
   ],
 });
 

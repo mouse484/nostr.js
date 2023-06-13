@@ -1,4 +1,5 @@
 import { TextNote } from '../manager/TextNote.ts';
+import { proxify } from '../proxify.ts';
 import { event } from './mod.ts';
 
 export default event(() => ({
@@ -13,7 +14,7 @@ export default event(() => ({
     });
     const result: TextNote = {
       id: event.id,
-      author: client.$Author.get(event.pubkey),
+      author: proxify(client.$Author, event.pubkey),
       content: event.content,
       pubkey: event.pubkey,
       createdAt: new Date(event.created_at * 1000),
